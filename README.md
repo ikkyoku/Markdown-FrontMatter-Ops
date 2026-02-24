@@ -72,18 +72,55 @@ autoLink:
 <!-- auto-link: end -->
 ```
 
-### 阶段三：高级功能
+### 阶段三：FrontMatter SQL 引擎（核心功能）
 
-#### 3.1 链接面板
+#### 3.1 SQL-like 命令行接口
+提供类 SQL 的命令行工具，批量操作知识库中所有 Markdown 文件的 YAML FrontMatter。
+
+**支持的语法**：
+
+```bash
+# 查询 (SELECT)
+mfm query "SELECT title, tags, date FROM *.md WHERE tags CONTAINS '笔记' AND status = '已发布'"
+
+# 更新 (UPDATE)
+mfm update "UPDATE *.md SET status = '归档', updated_at = '2026-02-24' WHERE date < '2025-01-01'"
+
+# 删除字段 (ALTER DROP)
+mfm alter "ALTER TABLE *.md DROP COLUMN draft"
+
+# 添加字段 (ALTER ADD)
+mfm alter "ALTER TABLE *.md ADD COLUMN category STRING DEFAULT '未分类'"
+
+# 插入新文档 (INSERT)
+mfm insert "INSERT INTO *.md (title, tags, created_at) VALUES ('新笔记', ['临时'], '2026-02-24')"
+
+# 删除文档 (DELETE)
+mfm delete "DELETE FROM *.md WHERE tags CONTAINS '草稿' AND created_at < '2025-06-01'"
+```
+
+**WHERE 条件支持**：
+- 比较运算：`=`, `!=`, `>`, `<`, `>=`, `<=`
+- 字符串匹配：`CONTAINS`, `STARTS WITH`, `ENDS WITH`, `REGEX`
+- 数组操作：`IN`, `NOT IN`, `ANY`, `ALL`
+- 逻辑运算：`AND`, `OR`, `NOT`
+- 日期函数：`NOW()`, `DATE()`, `YEAR()`, `MONTH()`
+
+**执行模式**：
+- `--dry-run`：预览变更，不实际执行
+- `--backup`：执行前自动备份
+- `--confirm`：每个文件修改前确认
+
+#### 3.2 链接面板
 - 侧边栏显示当前文档的入链和出链
 - 可视化链接关系图
 
-#### 3.2 批量操作
+#### 3.3 批量操作
 - 批量更新所有文档的链接
 - 清理失效链接
 - 重构文件路径时自动更新链接
 
-#### 3.3 模板支持
+#### 3.4 模板支持
 - 自定义反向链接格式模板
 - 支持变量如 `{{sourceTitle}}`、`{{sourceDate}}` 等
 
@@ -94,6 +131,7 @@ autoLink:
 ### 技术栈
 - **TypeScript**：主要开发语言
 - **VS Code Extension API**：插件框架
+- **Node.js CLI**：命令行工具（FrontMatter SQL 引擎）
 - **YAML Parser**：FrontMatter 解析
 - **Markdown-it**（可选）：Markdown 解析
 
@@ -103,6 +141,15 @@ markdown-frontmatter-ops/
 ├── .vscode/              # VS Code 调试配置
 ├── src/
 │   ├── extension.ts      # 插件入口
+│   ├── cli/              # 命令行工具
+│   │   ├── index.ts      # CLI 入口
+│   │   ├── parser.ts     # SQL 解析器
+│   │   ├── executor.ts   # 执行引擎
+│   │   └── commands/     # 各命令实现
+│   │       ├── query.ts
+│   │       ├── update.ts
+│   │       ├── alter.ts
+│   │       └── delete.ts
 │   ├── features/
 │   │   ├── wikiLink.ts   # Wiki Link 核心功能
 │   │   ├── autoLink.ts   # 自动链接更新
@@ -152,14 +199,22 @@ markdown-frontmatter-ops/
 - [ ] 条件匹配逻辑
 - [ ] 反向链接自动插入
 
-### Phase 3：优化与测试（预计 2-3 天）
+### Phase 3：FrontMatter SQL 引擎（预计 5-7 天）
+- [ ] SQL-like 语法解析器
+- [ ] WHERE 条件引擎
+- [ ] CRUD 命令实现（query/update/alter/delete/insert）
+- [ ] 批量操作与事务支持
+- [ ] 命令行接口（CLI）
+
+### Phase 4：优化与测试（预计 2-3 天）
 - [ ] 链接面板
 - [ ] 批量操作
 - [ ] 单元测试
 - [ ] 性能优化
 
-### Phase 4：发布（预计 1 天）
+### Phase 5：发布（预计 1 天）
 - [ ] 打包与发布到 VS Code Marketplace
+- [ ] 发布 npm CLI 包
 - [ ] 编写使用文档
 
 ---
@@ -301,8 +356,9 @@ npm run test:integration
 |-----|------|---------|
 | v0.1.0 | 基础双链功能 | 2026-03-01 |
 | v0.2.0 | 自动链接更新 | 2026-03-08 |
-| v0.3.0 | 链接面板 + 批量操作 | 2026-03-15 |
-| v1.0.0 | 稳定版发布 | 2026-03-22 |
+| v0.3.0 | FrontMatter SQL 引擎 | 2026-03-15 |
+| v0.4.0 | 链接面板 + 批量操作 | 2026-03-22 |
+| v1.0.0 | 稳定版发布 | 2026-03-29 |
 
 ---
 
