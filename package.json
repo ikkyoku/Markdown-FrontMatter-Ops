@@ -1,0 +1,58 @@
+{
+  "name": "markdown-frontmatter-ops",
+  "displayName": "Markdown FrontMatter Ops",
+  "description": "VS Code 插件 - 增强 Markdown 双链与 FrontMatter 自动化管理",
+  "version": "0.1.0",
+  "publisher": "ikkyoku",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:markdown"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "markdownFrontMatterOps.scanWikiLinks",
+        "title": "扫描 Wiki Links",
+        "category": "MFM Ops"
+      }
+    ],
+    "configuration": {
+      "title": "Markdown FrontMatter Ops",
+      "properties": {
+        "markdownFrontMatterOps.wikiLink.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "启用 Wiki Link 功能"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "@types/node": "20.x",
+    "typescript": "^5.3.0",
+    "eslint": "^8.57.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@vscode/test-electron": "^2.3.8",
+    "@vscode/vsce": "^2.24.0"
+  },
+  "dependencies": {
+    "yaml": "^2.3.4"
+  }
+}
